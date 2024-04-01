@@ -1,19 +1,19 @@
-import { Controller, Get, Render } from '@nestjs/common';
-import { AppService } from './app.service';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Get, Render } from "@nestjs/common";
+import { AppService } from "./app.service";
+import { ConfigService } from "@nestjs/config";
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private configService: ConfigService,
-  ) {}
+    constructor(
+        private readonly appService: AppService,
+        private configService: ConfigService
+    ) {}
 
-  @Get()
-  @Render('home')
-  getHello() {
-    const PORT = this.configService.get<string>('PORT');
-    console.log(PORT);
-    return;
-  }
+    @Get()
+    @Render("home")
+    getHello() {
+        const PORT = this.configService.get<string>("PORT");
+        console.log(PORT);
+        return;
+    }
 }
