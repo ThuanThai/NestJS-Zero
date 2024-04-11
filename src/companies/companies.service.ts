@@ -6,6 +6,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { User } from 'src/decorator/customize';
 import { IUser } from 'src/users/user.interface';
+import aqp from 'api-query-params';
+import { isEmpty } from 'class-validator';
 
 @Injectable()
 export class CompaniesService {
@@ -23,8 +25,34 @@ export class CompaniesService {
         });
     }
 
-    findAll() {
-        return `This action returns all companies`;
+    async findAll(page: number, limit: number, qs: string) {
+        const { filter, skip, sort, projection, population } = aqp(qs);
+        delete filter.page;
+        delete filter.limit;
+
+        let defaultLimit = +limit ? +limit : 10;
+        let offset = (+page - 1) * +limit;
+
+        const totalItems = (await this.companyModel.find(filter)).length;
+        const totalPages = Math.ceil(totalItems / defaultLimit);
+        const result = await this.companyModel
+            .find(filter)
+            .skip(offset)
+            .limit(defaultLimit)
+            // @ts-ignore: Unreachable code error
+            .sort(sort)
+            .populate(population)
+            .exec();
+
+        return {
+            meta: {
+                current: page, //trang hiện tại
+                pageSize: limit, //số lượng bản ghi đã lấy
+                pages: totalPages, //tổng số trang với điều kiện query
+                total: totalItems, // tổng số phần tử (số bản ghi)
+            },
+            result, //kết quả query
+        };
     }
 
     findOne(id: number) {
