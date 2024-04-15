@@ -8,14 +8,14 @@ import {
     Delete,
     Headers,
     Query,
-} from '@nestjs/common';
-import { CompaniesService } from './companies.service';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
-import { User } from 'src/decorator/customize';
-import { IUser } from 'src/users/user.interface';
+} from "@nestjs/common";
+import { CompaniesService } from "./companies.service";
+import { CreateCompanyDto } from "./dto/create-company.dto";
+import { UpdateCompanyDto } from "./dto/update-company.dto";
+import { ResponseMessage, User } from "src/decorator/customize";
+import { IUser } from "src/users/user.interface";
 
-@Controller('companies')
+@Controller("companies")
 export class CompaniesController {
     constructor(private readonly companiesService: CompaniesService) {}
 
@@ -25,30 +25,31 @@ export class CompaniesController {
     }
 
     @Get()
+    @ResponseMessage("Fetch All company with paginate")
     findAll(
-        @Query('page') page: string,
-        @Query('limit') limit: string,
+        @Query("page") page: string,
+        @Query("limit") limit: string,
         @Query() qs: string
     ) {
         return this.companiesService.findAll(+page, +limit, qs);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
+    @Get(":id")
+    findOne(@Param("id") id: string) {
         return this.companiesService.findOne(+id);
     }
 
-    @Patch(':id')
+    @Patch(":id")
     update(
-        @Param('id') id: string,
+        @Param("id") id: string,
         @Body() updateCompanyDto: UpdateCompanyDto,
         @User() user: IUser
     ) {
         return this.companiesService.update(id, updateCompanyDto, user);
     }
 
-    @Delete(':id')
-    remove(@Param('id') id: string, @User() user: IUser) {
+    @Delete(":id")
+    remove(@Param("id") id: string, @User() user: IUser) {
         return this.companiesService.remove(id, user);
     }
 }
